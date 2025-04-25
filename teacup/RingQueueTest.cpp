@@ -2,7 +2,7 @@
 #include <mutex>
 #include <thread>
 #include <gtest/gtest.h>
-#include <ringQueue.hpp>
+#include <RingQueue.hpp>
 TEST(ringQueue, testSingleThread)
 {
     RingQueue<int, false> queue(1000);
