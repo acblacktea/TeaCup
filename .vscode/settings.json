@@ -50,6 +50,32 @@
         "unordered_map": "cpp",
         "variant": "cpp",
         "vector": "cpp",
-        "algorithm": "cpp"
-    }
+        "algorithm": "cpp",
+        "__config": "cpp",
+        "utility": "cpp",
+        "type_traits": "cpp",
+        "map": "cpp",
+        "fstream": "cpp",
+        "shared_mutex": "cpp",
+        "__tree": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "span": "cpp",
+        "unordered_set": "cpp",
+        "condition_variable": "cpp",
+        "iterator": "cpp",
+        "forward_list": "cpp",
+        "filesystem": "cpp",
+        "future": "cpp",
+        "atomic": "cpp",
+        "chrono": "cpp",
+        "functional": "cpp",
+        "any": "cpp",
+        "compare": "cpp"
+    },
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_fallbackStyle": "none",
+    "C_Cpp.clang_format_style": "file",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true, // Enable clang-tidy
+    "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true, // Use the build path for configuration
 }
