@@ -71,7 +71,9 @@
         "chrono": "cpp",
         "functional": "cpp",
         "any": "cpp",
-        "compare": "cpp"
+        "compare": "cpp",
+        "format": "cpp",
+        "random": "cpp"
     },
     "editor.formatOnSave": true,
     "C_Cpp.clang_format_fallbackStyle": "none",

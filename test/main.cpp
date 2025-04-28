@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <CacheStrategy.hpp>
 #include <FileReader.hpp>
+#include <MMapQueue.hpp>
 #include <RingQueue.hpp>
 #include <SharedPtr.hpp>
 #include <TaskScheduler.hpp>
