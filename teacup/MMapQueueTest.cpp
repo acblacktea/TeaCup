@@ -15,12 +15,13 @@ struct testBlock
 TEST(mmapQueue, test1)
 {
     auto dataSize = 100000000;
+    constexpr size_t mmapSize = 10000;
     // create mmap;
-    MMapQueue<testBlock, 2048> mpQueue("./mmapQueue.txt");
+    MMapQueue<testBlock, mmapSize> mpQueue("./mmapQueue.txt");
     auto process1PID = fork();
     if (process1PID == 0)
     {
-        MMapQueue<testBlock, 2048> mpQueue("./mmapQueue.txt");
+        MMapQueue<testBlock, mmapSize> mpQueue("./mmapQueue.txt");
         for (int i = 0; i < dataSize; ++i)
         {
             testBlock data;
@@ -36,7 +37,7 @@ TEST(mmapQueue, test1)
     if (process2PID == 0)
     {
         std::vector<int> ans;
-        MMapQueue<testBlock, 2048> mpQueue("./mmapQueue.txt");
+        MMapQueue<testBlock, mmapSize> mpQueue("./mmapQueue.txt");
         for (int i = 0; i < dataSize; ++i)
         {
             testBlock data;
