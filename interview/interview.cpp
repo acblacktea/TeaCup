@@ -9,47 +9,37 @@
 #include <stack>
 #include <string>
 #include <thread>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
 
-class Solution
-{
-public:
-    int countLargestGroup(int n)
-    {
-        auto countVe = std::vector<int>(100, 0);
-        auto maxDigit = 0;
-        for (int i = 1; i <= n; ++i)
-        {
-            auto oneDigitCount = 0;
-            auto num = i;
-            while (num)
-            {
-                oneDigitCount += num % 10;
-                num /= 10;
-            }
-
-            ++countVe[oneDigitCount];
-            maxDigit = std::max(maxDigit, countVe[oneDigitCount]);
-        }
-
-        auto ans = 0;
-        for (int i = 0; i < 100; ++i)
-        {
-            if (countVe[i] == maxDigit)
-            {
-                ++ans;
-            }
-        }
-
-        return ans;
-    }
-};
 
 TEST(interviewTest, test1)
 {
-    std::cout << "cpu core count" << std::thread::hardware_concurrency() << std::endl;
+    std::unordered_map<int, int> my_map;
+
+    my_map.max_load_factor(3.0); // Allow more elements per bucket
+    my_map.reserve(300);
+    std::cout << "Buckets: " << my_map.bucket_count() << ", Load factor: " << my_map.load_factor() << "\n";
+
+    //my_map.max_load_factor(2.0);
+    // Insert elements
+    for (int i = 0; i < 100; i++)
+    {
+        my_map[i] = i;
+        std::cout << "index: " << i + 1 << ", Buckets: " << my_map.bucket_count() << ", Load factor: " << my_map.load_factor() << ", "
+                  << "\n";
+
+        // Rehash happens automatically when:
+        // size() / bucket_count() > max_load_factor()
+    }
+
+    std::cout << "After inserts - Buckets: " << my_map.bucket_count() << ", Load factor: " << my_map.load_factor() << "\n";
+
+    // Manually control rehashing
+    my_map.max_load_factor(2.0); // Allow more elements per bucket
+    my_map.rehash(200);
 }

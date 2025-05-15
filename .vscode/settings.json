@@ -73,7 +73,10 @@
         "any": "cpp",
         "compare": "cpp",
         "format": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "iomanip": "cpp"
     },
     "editor.formatOnSave": true,
     "C_Cpp.clang_format_fallbackStyle": "none",
