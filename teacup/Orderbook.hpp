@@ -124,6 +124,11 @@ private:
                 {
                     orders.erase(orders.begin());
                 }
+
+                if (orderIter->quantity == 0)
+                {
+                    break;
+                }
             }
 
             if (oppositeBook.begin()->second.empty())
