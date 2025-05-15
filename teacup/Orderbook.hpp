@@ -33,16 +33,22 @@ class OrderBook
 public:
     bool openOrder(Order & order)
     {
-        auto & book = order.side == Side::BID ? bidPriceLevels : askPriceLevels;
         if (orderIDToOrder.contains(order.orderID))
         {
             return false;
         }
 
+        match(order);
+        // taker
+        if (order.quantity == 0)
+        {
+            return true;
+        }
+
+        auto & book = order.side == Side::BID ? bidPriceLevels : askPriceLevels;
         auto & priceLevel = book[order.price];
         priceLevel.emplace_back(order);
         orderIDToOrder[order.orderID] = priceLevel.rbegin().base();
-        match(order.orderID);
         return true;
     }
 
@@ -77,7 +83,6 @@ public:
 
         // re-insert order again
         openOrder(order);
-        match(order.orderID);
         return true;
     }
 
@@ -92,19 +97,14 @@ public:
     }
 
 private:
-    void match(size_t orderID)
+    void match(Order & order)
     {
-        auto & orderIter = orderIDToOrder[orderID];
-        auto & oppositeBook = orderIter->side == Side::BID ? askPriceLevels : bidPriceLevels;
-        while (orderIter->quantity != 0 && !oppositeBook.empty())
+        auto & oppositeBook = order.side == Side::BID ? askPriceLevels : bidPriceLevels;
+        while (order.quantity != 0 && !oppositeBook.empty())
         {
             auto & orders = oppositeBook.begin()->second;
-            if (orderIter->side == Side::BID && orders.begin()->price > orderIter->price)
-            {
-                break;
-            }
-
-            if (orderIter->side == Side::ASK && orders.begin()->price < orderIter->price)
+            if ((order.side == Side::BID && orders.begin()->price > order.price)
+                || (order.side == Side::ASK && orders.begin()->price < order.price))
             {
                 break;
             }
@@ -112,20 +112,20 @@ private:
             while (orders.begin() != orders.end())
             {
                 auto iter = orders.begin();
-                int quantity = std::min(iter->quantity, orderIter->quantity);
+                int quantity = std::min(iter->quantity, order.quantity);
                 int price = iter->price;
-                int buyOrderID = orderIter->side == Side::BID ? orderIter->orderID : iter->orderID;
-                int sellOrderID = orderIter->side == Side::ASK ? orderIter->orderID : iter->orderID;
+                int buyOrderID = order.side == Side::BID ? order.orderID : iter->orderID;
+                int sellOrderID = order.side == Side::ASK ? order.orderID : iter->orderID;
                 historyTrades.emplace_back(buyOrderID, sellOrderID, price, quantity);
 
-                orderIter->quantity -= quantity;
+                order.quantity -= quantity;
                 iter->quantity -= quantity;
                 if (iter->quantity == 0)
                 {
                     orders.erase(orders.begin());
                 }
 
-                if (orderIter->quantity == 0)
+                if (order.quantity == 0)
                 {
                     break;
                 }
@@ -135,12 +135,6 @@ private:
             {
                 oppositeBook.erase(oppositeBook.begin());
             }
-        }
-
-
-        if (orderIter->quantity == 0)
-        {
-            cancelOrder(orderID);
         }
     }
 
