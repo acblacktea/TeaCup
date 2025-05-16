@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <list>
 #include <map>
 #include <optional>
@@ -31,6 +32,8 @@ public:
 class OrderBook
 {
 public:
+    OrderBook() { orderIDToOrder.reserve(1000000); }
+
     bool openOrder(Order & order)
     {
         if (orderIDToOrder.contains(order.orderID))
@@ -39,16 +42,18 @@ public:
         }
 
         match(order);
+
         // taker
         if (order.quantity == 0)
         {
             return true;
         }
 
+        // maker
         auto & book = order.side == Side::BID ? bidPriceLevels : askPriceLevels;
         auto & priceLevel = book[order.price];
         priceLevel.emplace_back(order);
-        orderIDToOrder[order.orderID] = priceLevel.rbegin().base();
+        orderIDToOrder[order.orderID] = --priceLevel.end();
         return true;
     }
 
@@ -62,10 +67,11 @@ public:
         auto & iter = orderIDToOrder[orderID];
         auto & book = iter->side == Side::BID ? bidPriceLevels : askPriceLevels;
 
-        book[iter->price].erase(iter);
-        if (book[iter->price].empty())
+        auto price = iter->price;
+        book[price].erase(iter);
+        if (book[price].empty())
         {
-            book.erase(iter->price);
+            book.erase(price);
         }
 
         orderIDToOrder.erase(orderID);
@@ -102,7 +108,9 @@ private:
         auto & oppositeBook = order.side == Side::BID ? askPriceLevels : bidPriceLevels;
         while (order.quantity != 0 && !oppositeBook.empty())
         {
-            auto & orders = oppositeBook.begin()->second;
+            auto oppositeBookIter = order.side == Side::ASK ? --oppositeBook.end() : oppositeBook.begin();
+            auto & orders = oppositeBookIter->second;
+
             if ((order.side == Side::BID && orders.begin()->price > order.price)
                 || (order.side == Side::ASK && orders.begin()->price < order.price))
             {
@@ -117,12 +125,12 @@ private:
                 int buyOrderID = order.side == Side::BID ? order.orderID : iter->orderID;
                 int sellOrderID = order.side == Side::ASK ? order.orderID : iter->orderID;
                 historyTrades.emplace_back(buyOrderID, sellOrderID, price, quantity);
-
                 order.quantity -= quantity;
                 iter->quantity -= quantity;
                 if (iter->quantity == 0)
                 {
-                    orders.erase(orders.begin());
+                    orderIDToOrder.erase(iter->orderID);
+                    orders.erase(iter);
                 }
 
                 if (order.quantity == 0)
@@ -131,9 +139,10 @@ private:
                 }
             }
 
-            if (oppositeBook.begin()->second.empty())
+
+            if (orders.empty())
             {
-                oppositeBook.erase(oppositeBook.begin());
+                oppositeBook.erase(oppositeBookIter);
             }
         }
     }
