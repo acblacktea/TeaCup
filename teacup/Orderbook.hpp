@@ -68,8 +68,9 @@ public:
         auto & book = iter->side == Side::BID ? bidPriceLevels : askPriceLevels;
 
         auto price = iter->price;
-        book[price].erase(iter);
-        if (book[price].empty())
+        auto & orders = book[price];
+        orders.erase(iter);
+        if (orders.empty())
         {
             book.erase(price);
         }
