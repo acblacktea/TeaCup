@@ -1,10 +1,4 @@
-#include <iostream>
-#include <optional>
-#include <unordered_map>
-#include <vector>
-#include <gtest/gtest.h>
-using namespace std;
-
+#pragma once
 template <typename T>
 class CustomAllocator
 {
@@ -24,12 +18,3 @@ public:
 
 private:
 };
-
-TEST(interviewTest, test1)
-{
-    std::vector<int, CustomAllocator<int>> ve;
-    for (int i = 0; i < 10000; ++i)
-    {
-        ve.emplace_back(i);
-    }
-}
